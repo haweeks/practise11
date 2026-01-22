@@ -1,63 +1,43 @@
 import express from "express";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const app = express();
+
+// middleware
 app.use(express.json());
 
+// constants
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
 
-// test route
+// ===== ROUTES =====
+
+// health check (обязателен для Render)
 app.get("/", (req, res) => {
-  res.json({ message: "API is running" });
+  res.json({ status: "API is running" });
 });
 
-// model
-const ItemSchema = new mongoose.Schema({
-  name: String,
-});
-const Item = mongoose.model("Item", ItemSchema);
-
-// CRUD
-app.get("/api/items", async (req, res) => {
-  const items = await Item.find();
-  res.json(items);
+// example API route (CRUD-заглушка)
+app.get("/api/items", (req, res) => {
+  res.json([
+    { id: 1, name: "Item 1" },
+    { id: 2, name: "Item 2" }
+  ]);
 });
 
-app.get("/api/items/:id", async (req, res) => {
-  const item = await Item.findById(req.params.id);
-  res.json(item);
-});
-
-app.post("/api/items", async (req, res) => {
-  const item = await Item.create(req.body);
-  res.json(item);
-});
-
-app.put("/api/items/:id", async (req, res) => {
-  const item = await Item.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true }
-  );
-  res.json(item);
-});
-
-app.delete("/api/items/:id", async (req, res) => {
-  await Item.findByIdAndDelete(req.params.id);
-  res.json({ message: "Deleted" });
-});
-
-//start
+// ===== DATABASE =====
 
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(MONGO_URI)
   .then(() => {
-    app.listen(process.env.PORT || 3000, () => {
-      console.log(`Server running on ${process.env.PORT || 3000}`);
-    });
+    console.log("MongoDB connected");
   })
-  .catch(err => console.error(err));
+  .catch(err => {
+    console.error("MongoDB connection error:", err);
+  });
+
+// ===== SERVER =====
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
