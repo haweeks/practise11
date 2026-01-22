@@ -51,12 +51,13 @@ app.delete("/api/items/:id", async (req, res) => {
   res.json({ message: "Deleted" });
 });
 
-// start server
+//start
+
 mongoose
-  .connect(MONGO_URI)
+  .connect(process.env.MONGO_URI)
   .then(() => {
-    app.listen(PORT, () =>
-      console.log(`Server running on ${PORT}`)
-    );
+    app.listen(process.env.PORT || 3000, () => {
+      console.log(`Server running on ${process.env.PORT || 3000}`);
+    });
   })
   .catch(err => console.error(err));
