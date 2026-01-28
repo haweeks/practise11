@@ -19,6 +19,13 @@ app.get("/api/items", (req, res) => {
   ]);
 });
 
+app.get("/version", (req, res) => {
+  res.json({
+    version: "1.1",
+    updatedAt: "2026-01-18"
+  });
+});
+
 mongoose
   .connect(MONGO_URI)
   .then(() => {
